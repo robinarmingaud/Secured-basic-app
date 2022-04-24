@@ -17,10 +17,10 @@ def hello_world():
     return login()
 
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['POST', 'GET'])
 def login():
-    username = request.args.get('username')
-    password = request.args.get('password')
+    username = request.form.get('username')
+    password = request.form.get('password')
     user = models.User.query.filter_by(username=username).first()
 
     # check if the user actually exists
@@ -59,6 +59,5 @@ def populate():
     return jsonify(data)
 '''
 
-
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=443 ,ssl_context=('cert.pem', 'key.pem'))
+    app.run(ssl_context=('cert.pem', 'key.pem'))
