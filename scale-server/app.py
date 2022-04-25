@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, jsonify, request
 from werkzeug.security import check_password_hash
 from database.database import db, init_database
@@ -58,6 +60,7 @@ def populate():
 
     return jsonify(data)
 '''
-
+port = int(os.environ.get("PORT", 5000)) # <-----
+app.run(host='0.0.0.0', port=port)
 if __name__ == '__main__':
-    app.run(ssl_context=('cert.pem', 'key.pem'))
+    app.run(host='0.0.0.0',port=port)
