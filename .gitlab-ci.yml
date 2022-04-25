@@ -17,3 +17,7 @@ code_quality:
       codequality: gl-code-quality-report.json
 
 
+build: 
+  stage : build
+  script :
+    - flutter build apk --split-per-abi
