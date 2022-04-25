@@ -1,100 +1,122 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/views/directory_page.dart';
+import 'package:http/http.dart' as http;
 
-class LoginScreen extends StatelessWidget {
+Future<void> LoginMethod(String username, String password) async {
+  var response = await http.post(
+    Uri.parse('https://127.0.0.1:5000/login'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(
+        <String, String>{"username": username, "password": password}),
+  );
 
-  static const routeName = '/login-screen';
+  if (response.statusCode == 200) {
+    // If the server did return a 200 response,
+    // then parse the JSON.
+    print('ok');
+  } else {
+    // If the server did not return a 200 response,
+    // then throw an exception.
+    throw Exception('Failed to create album.');
+  }
+}
 
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
+class Album {
+  final String username;
+  final String password;
 
-  Widget login(IconData icon) {
-    return Container(
-      height: 50,
-      width: 115,
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.withOpacity(0.4), width: 1),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, size: 24),
-          TextButton(onPressed: () {}, child: Text('Login')),
-        ],
-      ),
+  const Album({required this.username, required this.password});
+
+  factory Album.fromJson(Map<String, dynamic> json) {
+    return Album(
+      username: json['username'],
+      password: json['password'],
     );
   }
+}
 
-  Widget userInput(TextEditingController userInput, String hintTitle, TextInputType keyboardType) {
-    return Container(
-      height: 55,
-      margin: EdgeInsets.only(bottom: 15),
-      decoration: BoxDecoration(color: Colors.blueGrey.shade200, borderRadius: BorderRadius.circular(30)),
-      child: Padding(
-        padding: const EdgeInsets.only(left: 25.0, top: 15, right: 25),
-        child: TextField(
-          controller: userInput,
-          autocorrect: false,
-          enableSuggestions: false,
-          autofocus: false,
-          decoration: InputDecoration.collapsed(
-            hintText: hintTitle,
-            hintStyle: TextStyle(fontSize: 18, color: Colors.white70, fontStyle: FontStyle.italic),
-          ),
-          keyboardType: keyboardType,
-        ),
-      ),
-    );
-  }
+class LoginPage extends StatefulWidget {
+  static const routeName = '/login-page';
+
+  const LoginPage({Key? key}) : super(key: key);
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  late String pseudo;
+  late String password;
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Container(
-              height: 510,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(15), topRight: Radius.circular(15)),
+      appBar: AppBar(title: const Text('Login')),
+      body: Padding(
+        padding: const EdgeInsets.all(60),
+        child: Center(
+          child: Form(
+            key: _formKey,
+            child: Column(children: [
+              TextFormField(
+                onChanged: (value) {
+                  setState(() {
+                    pseudo = value;
+                  });
+                },
+                decoration: const InputDecoration(
+                  icon: Icon(Icons.person),
+                  labelText: 'Pseudo *',
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter some text';
+                  }
+                },
               ),
-              child: Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    SizedBox(height: 45),
-                    userInput(emailController, 'Email', TextInputType.emailAddress),
-                    userInput(passwordController, 'Password', TextInputType.visiblePassword),
-                    Container(
-                      height: 55,
-                      // for an exact replicate, remove the padding.
-                      // pour une réplique exact, enlever le padding.
-                      padding: const EdgeInsets.only(top: 5, left: 70, right: 70),
+              TextFormField(
+                onChanged: (value) {
+                  setState(() {
+                    password = value;
+                  });
+                },
+                decoration: const InputDecoration(
+                  icon: Icon(Icons.key),
+                  labelText: 'Password *',
+                ),
+                obscureText: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter some text';
+                  }
+                },
+              ),
+              Container(
+                margin: const EdgeInsets.only(top: 30.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      LoginMethod(pseudo, password);
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.fromLTRB(40, 15, 40, 15),
+                  ),
+                  child: const Text(
+                    'Login',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
                     ),
-                    SizedBox(height: 20),
-                    Center(child: Text('Forgot password ?'),),
-                    SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 25.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          login(Icons.add),
-                          login(Icons.book_online),
-                        ],
-                      ),
-                    ),
-                    Divider(thickness: 0, color: Colors.white),
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ]),
+          ),
         ),
       ),
     );

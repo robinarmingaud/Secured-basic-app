@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, jsonify, request
 from werkzeug.security import check_password_hash
 from database.database import db, init_database
@@ -16,11 +18,11 @@ with app.app_context():
 def hello_world():
     return login()
 
-@app.route('/login', methods=['POST'])
-def login():
-    username = request.args.get('username')  #Je sais pas trop si c'est exploitable du coté client
-    password = request.args.get('password')  #pareil du coup, y faudra peut-être modifier ça
 
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    username = request.form.get('username')
+    password = request.form.get('password')
     user = models.User.query.filter_by(username=username).first()
 
     # check if the user actually exists
@@ -29,7 +31,7 @@ def login():
         return "authentication error: try again"
     # if the above check passes, then we know the user has the right credentials
     users = models.User.query.all()
-    data=[]
+    data = []
     for user in users:
         data.append({
             "firstname": user.firstname,
@@ -58,6 +60,7 @@ def populate():
 
     return jsonify(data)
 '''
-
+port = int(os.environ.get("PORT", 5000)) # <-----
+app.run(host='0.0.0.0', port=port)
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0',port=port)
