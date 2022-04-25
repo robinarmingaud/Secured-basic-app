@@ -14,7 +14,11 @@ code_quality:
     - metrics lib -r codeclimate  > gl-code-quality-report.json
 
 
-build: 
+build-apk: 
+  default:
+    tags:
+      -runs-on
+      -steps
   stage : build
   runs-on: ubuntu-latest
   steps: 
