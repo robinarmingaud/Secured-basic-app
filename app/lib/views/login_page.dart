@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 Future<void> LoginMethod(String username, String password) async {
   var response = await http.post(
-    Uri.parse('https://127.0.0.1:5000/login'),
+    Uri.parse('https://serverscale.herokuapp.com/login'),
     headers: <String, String>{
       'Content-Type': 'application/json; charset=UTF-8',
     },
@@ -17,7 +17,7 @@ Future<void> LoginMethod(String username, String password) async {
   if (response.statusCode == 200) {
     // If the server did return a 200 response,
     // then parse the JSON.
-    print('ok');
+    print(Album.fromJson(jsonDecode(response.body)[0]));
   } else {
     // If the server did not return a 200 response,
     // then throw an exception.
@@ -26,15 +26,19 @@ Future<void> LoginMethod(String username, String password) async {
 }
 
 class Album {
-  final String username;
-  final String password;
+  final String firstname;
+  final String lastname;
+  final String picture;
+  final String biography;
 
-  const Album({required this.username, required this.password});
+  const Album({required this.firstname, required this.lastname, required this.picture, required this.biography});
 
   factory Album.fromJson(Map<String, dynamic> json) {
     return Album(
-      username: json['username'],
-      password: json['password'],
+      firstname: json['firstname'],
+      lastname: json['lastname'],
+      picture: json['picture'],
+      biography: json['biography'],
     );
   }
 }

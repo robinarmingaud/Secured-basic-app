@@ -21,8 +21,9 @@ def hello_world():
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
-    username = request.form.get('username')
-    password = request.form.get('password')
+    json = request.get_json()
+    username = json['username']
+    password = json['password']
     user = models.User.query.filter_by(username=username).first()
 
     # check if the user actually exists
