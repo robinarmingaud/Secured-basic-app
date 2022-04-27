@@ -8,8 +8,8 @@ class Profile {
       this.firstName, this.lastName, this.thumbnailPath, this.biography);
 
   Profile.fromJson(Map<String, dynamic> json)
-      : firstName = json['first_name'],
-        lastName = json['last_name'],
-        thumbnailPath = json["profile_picture"],
+      : firstName = json['firstname'],
+        lastName = json['lastname'],
+        thumbnailPath = json["picture"],
         biography = json["biography"];
 }
