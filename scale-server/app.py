@@ -7,6 +7,7 @@ import database.models as models
 
 app = Flask(__name__)
 login = LoginManager(app)
+login.session_protection = "strong"
 
 # Setup the secret key and the environment 
 app.config.update(SECRET_KEY=str(os.urandom(64)),
@@ -50,7 +51,7 @@ def login():
         return "authentication error: try again"
     # if the above check passes, then we know the user has the right credentials
     elif user and check_password_hash(user.password,password):
-        login_user(user, remember=True)
+        login_user(user)
         return jsonify({
             "firstname": user.firstname,
             "lastname": user.lastname,
@@ -58,28 +59,23 @@ def login():
             "biography": user.biography
         })
 
-@app.route('/directory_page', methods=['POST'])
-@login_required
+@app.route('/directory_page')
 def directory_page():
-    json = request.get_json()
-    users = models.User.query.all()
-    data = []
-    for user in users:
-        data.append({
-            "firstname": user.firstname,
-            "lastname": user.lastname,
-            "picture": user.picture,
-            "biography": user.biography
-        })
-    return jsonify(data)
+        json = request.get_json()
+        users = models.User.query.all()
+        data = []
+        for user in users:
+            data.append({
+                "firstname": user.firstname,
+                "lastname": user.lastname,
+            })
+        return jsonify(data)
 
-@login_required
 @app.route('/logout')
 def logout():
     logout_user()
     return "Logout"
-
-
+    
 
 port = int(os.environ.get("PORT", 5000)) # <-----
 app.run(host='0.0.0.0', port=port)
