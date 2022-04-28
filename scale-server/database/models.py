@@ -11,7 +11,8 @@ class User(UserMixin, db.Model):
 
     """
     __tablename__ = 'user'
-    username = db.Column(db.String, primary_key=True)
+    id = db.Column(db.Integer,primary_key=True)
+    username = db.Column(db.String)
     password = db.Column(db.String) # as a sha256
     lastname = db.Column(db.String)
     firstname = db.Column(db.String)
@@ -20,6 +21,7 @@ class User(UserMixin, db.Model):
 
 def populate_database():
     user = User(
+        id=1,
         username="test",
         password=generate_password_hash("a", method='sha256'),
         lastname="Bidule",
@@ -29,6 +31,7 @@ def populate_database():
     )
     db.session.add(user)
     user2 = User(
+        id=2,
         username="Brad",
         password=generate_password_hash("a", method='sha256'),
         lastname="Pitt",
@@ -38,6 +41,7 @@ def populate_database():
     )
     db.session.add(user2)
     user3 = User(
+        id=3,
         username="George",
         password=generate_password_hash("a", method='sha256'),
         lastname="Clooney",
